@@ -1,0 +1,39 @@
+[
+    (
+        name: "Recipe 1",
+        ingredients: [
+            "10g of salt",
+            "1kg of beef",
+        ],
+    ),
+    (
+        name: "Recipe 2",
+        ingredients: [
+            "10g of salt",
+        ],
+    ),
+    (
+        name: "Recipe 3",
+        ingredients: [
+            "10g of salt",
+        ],
+    ),
+    (
+        name: "Recipe 4",
+        ingredients: [
+            "1kg of beef",
+        ],
+    ),
+    (
+        name: "Recipe 5",
+        ingredients: [
+            "10g of salt",
+        ],
+    ),
+    (
+        name: "Recipe 6",
+        ingredients: [
+            "1kg of beef",
+        ],
+    ),
+]
