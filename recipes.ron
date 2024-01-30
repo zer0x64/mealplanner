@@ -1,39 +1,26 @@
-[
-    (
-        name: "Recipe 1",
-        ingredients: [
-            "10g of salt",
-            "1kg of beef",
-        ],
-    ),
-    (
-        name: "Recipe 2",
-        ingredients: [
-            "10g of salt",
-        ],
-    ),
-    (
-        name: "Recipe 3",
-        ingredients: [
-            "10g of salt",
-        ],
-    ),
-    (
-        name: "Recipe 4",
-        ingredients: [
-            "1kg of beef",
-        ],
-    ),
-    (
-        name: "Recipe 5",
-        ingredients: [
-            "10g of salt",
-        ],
-    ),
-    (
+{
+    "3207966d-d91f-440c-bb9f-d39d50fc3726": (
         name: "Recipe 6",
-        ingredients: [
-            "1kg of beef",
-        ],
+        ingredients: ["1kg of beef"],
     ),
-]
+    "79d02f44-a091-48d4-b540-e793ae953bc7": (
+        name: "Recipe 4",
+        ingredients: ["1kg of beef"],
+    ),
+    "e8e2763b-1122-4bf9-b0eb-2e81d34ef020": (
+        name: "Recipe 2",
+        ingredients: ["10g of salt"],
+    ),
+    "c66c6b44-2a14-4af0-85dd-58fa3c7c2dfc": (
+        name: "Recipe 1",
+        ingredients: ["10g of salt", "1kg of beef"],
+    ),
+    "768fc831-9288-4751-b83c-a417196812a1": (
+        name: "Recipe 5",
+        ingredients: ["10g of salt"],
+    ),
+    "9103efd3-9747-4d60-b0c5-27f8a085aa08": (
+        name: "Recipe 3",
+        ingredients: ["10g of salt"],
+    ),
+}

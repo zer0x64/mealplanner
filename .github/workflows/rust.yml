@@ -10,8 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  build_macos:
     runs-on: macos-12-xl
 
     steps:
@@ -23,3 +22,41 @@ jobs:
       with:
         name: mealplanner_mac
         path: target/release/mealplanner
+
+  build_linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: "Install dependencies"
+      run : |
+        sudo apt install libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \ 
+            libsoup3.0-dev
+    - name: Build
+      run: cargo build --release
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mealplanner_linux
+        path: target/release/mealplanner
+
+  build_windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --release
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: mealplanner_windows
+        path: target/release/mealplanner.exe

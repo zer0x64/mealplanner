@@ -1,40 +1,98 @@
-use std::{fs::File, io::BufReader, path::PathBuf};
+#![allow(non_snake_case)]
+
+mod page;
+mod recipe;
+mod recipe_choser;
+mod recipe_editor;
+mod recipe_list;
+
+use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
 
 use clap::Parser;
-use rand::seq::SliceRandom;
-use serde::Deserialize;
+use dioxus::prelude::*;
+use uuid::Uuid;
+
+use page::Page;
+use recipe::{CurrentRecipe, Recipe};
+use recipe_choser::RecipeChoser;
+use recipe_editor::RecipeEditor;
+use recipe_list::RecipeList;
 
 #[derive(Debug, Parser)]
 struct Cli {
     #[arg(default_value = "./recipes.ron")]
     file: PathBuf,
-
-    #[arg(short, long, default_value_t = 3)]
-    count: usize,
-}
-
-#[derive(Debug, Deserialize)]
-struct Recipe {
-    name: String,
-    ingredients: Vec<String>,
 }
 
 fn main() {
-    let cli = Cli::parse();
+    dioxus_desktop::launch(App);
+}
 
-    let file = File::open(cli.file).expect("File does not exist");
-    let recipes: Vec<Recipe> =
-        ron::de::from_reader(BufReader::new(file)).expect("File format is invalid");
+fn App(cx: Scope) -> Element {
+    let cli = use_state(cx, || Cli::parse());
 
-    let chosen_recipe = recipes.choose_multiple(&mut rand::thread_rng(), cli.count);
+    // Setup global state
+    use_shared_state_provider(cx, || {
+        let file = match File::open(&cli.file) {
+            Ok(f) => f,
+            Err(_) => return HashMap::<Uuid, Recipe>::new(),
+        };
 
-    for (i, r) in chosen_recipe.enumerate() {
-        println!("Recipe {i}: {}", r.name);
-
-        println!("Ingredients:\n");
-
-        for ingredient in &r.ingredients {
-            println!("{}", ingredient)
+        match ron::de::from_reader(BufReader::new(file)) {
+            Ok(r) => r,
+            Err(_) => HashMap::new(),
         }
-    }
+    });
+
+    use_shared_state_provider(cx, || CurrentRecipe::default());
+
+    use_shared_state_provider(cx, || Page::Choser);
+
+    // Get the useful state
+    let current_page = use_shared_state::<Page>(cx).unwrap();
+
+    cx.render(rsx! {
+        head {
+            style { include_str!("./styles.css") }
+        },
+        nav {
+            ul {
+                li {
+                    button {
+                        onclick: move |_| *current_page.write() = Page::Choser,
+                        "Choser"
+                    }
+                }
+                li {
+                    button {
+                        onclick: move |_| *current_page.write() = Page::List,
+                        "Recipe List"
+                    }
+                }
+            }
+        }
+
+        match *current_page.read() {
+            Page::Choser => {
+                rsx!{
+                    RecipeChoser {}
+                }
+            },
+            Page::List => {
+                rsx!{
+                    RecipeList {
+                        file: cli.file.clone()
+                    }
+                }
+            }
+            Page::Editor => {
+                rsx!{
+                    RecipeEditor {
+                        file: cli.file.clone()
+                    }
+                }
+            }
+        }
+
+    })
 }
