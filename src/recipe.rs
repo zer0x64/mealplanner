@@ -10,21 +10,6 @@ pub struct Recipe {
     pub ingredients: Vec<String>,
 }
 
-#[derive(Clone)]
-pub struct CurrentRecipe {
-    pub id: Uuid,
-    pub recipe: Recipe,
-}
-
-impl Default for CurrentRecipe {
-    fn default() -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            recipe: Recipe::default(),
-        }
-    }
-}
-
 pub fn save_recipes(file: &PathBuf, recipes: &HashMap<Uuid, Recipe>) {
     let file = OpenOptions::new()
         .write(true)

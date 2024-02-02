@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
+use uuid::Uuid;
 
 use crate::recipe_choser::RecipeChoser;
 use crate::recipe_editor::RecipeEditor;
@@ -15,17 +16,17 @@ pub enum Route {
     #[route("/list")]
     RecipeList {},
 
-    #[route("/editor/")]
-    RecipeEditor {},
+    #[route("/editor/:id")]
+    RecipeEditor { id: Uuid },
     #[end_layout]
-    #[route("/test")]
+    #[route("/navbar")]
     NavBar {},
 }
 
 #[component]
 fn NavBar(cx: Scope) -> Element {
     render! {
-        body {
+        div {
             class: "max-w-4xl mx-auto p-4 font-sans bg-gray-100",
             nav {
                 class: "mb-4",
@@ -41,7 +42,7 @@ fn NavBar(cx: Scope) -> Element {
                     }
                     li {
                         class: "mr-4",
-                        Link { 
+                        Link {
                             to: Route::RecipeList {},
                             class: "text-blue-500 hover:text-blue-700",
                             "List"

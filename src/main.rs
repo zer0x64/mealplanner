@@ -15,7 +15,7 @@ use dioxus_router::prelude::*;
 use uuid::Uuid;
 
 use cli::Cli;
-use recipe::{CurrentRecipe, Recipe};
+use recipe::Recipe;
 use route::Route;
 
 fn main() {
@@ -48,8 +48,6 @@ fn App(cx: Scope) -> Element {
             Err(_) => HashMap::new(),
         }
     });
-
-    use_shared_state_provider(cx, || CurrentRecipe::default());
 
     cx.render(rsx! {
         Router::<Route>{}
