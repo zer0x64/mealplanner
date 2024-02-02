@@ -1,39 +1,44 @@
 #![allow(non_snake_case)]
 
-mod page;
+mod cli;
 mod recipe;
 mod recipe_choser;
 mod recipe_editor;
 mod recipe_list;
+mod route;
 
-use std::{collections::HashMap, fs::File, io::BufReader, path::PathBuf};
+use std::{collections::HashMap, fs::File, io::BufReader};
 
 use clap::Parser;
 use dioxus::prelude::*;
+use dioxus_router::prelude::*;
 use uuid::Uuid;
 
-use page::Page;
+use cli::Cli;
 use recipe::{CurrentRecipe, Recipe};
-use recipe_choser::RecipeChoser;
-use recipe_editor::RecipeEditor;
-use recipe_list::RecipeList;
-
-#[derive(Debug, Parser)]
-struct Cli {
-    #[arg(default_value = "./recipes.ron")]
-    file: PathBuf,
-}
+use route::Route;
 
 fn main() {
-    dioxus_desktop::launch(App);
+    #[cfg(target_family = "wasm")]
+    dioxus_web::launch(App);
+
+    #[cfg(any(windows, unix))]
+    dioxus_desktop::launch_cfg(
+        App,
+        dioxus_desktop::Config::new()
+            .with_custom_head(r#"<link rel="stylesheet" href="public/tailwind.css">"#.to_string())
+            .with_background_color((245, 245, 245, 255)),
+    )
 }
 
 fn App(cx: Scope) -> Element {
-    let cli = use_state(cx, || Cli::parse());
-
     // Setup global state
+    use_shared_state_provider(cx, || Cli::parse());
+
+    let cli = use_shared_state::<Cli>(cx).unwrap();
+
     use_shared_state_provider(cx, || {
-        let file = match File::open(&cli.file) {
+        let file = match File::open(&cli.read().file) {
             Ok(f) => f,
             Err(_) => return HashMap::<Uuid, Recipe>::new(),
         };
@@ -46,53 +51,7 @@ fn App(cx: Scope) -> Element {
 
     use_shared_state_provider(cx, || CurrentRecipe::default());
 
-    use_shared_state_provider(cx, || Page::Choser);
-
-    // Get the useful state
-    let current_page = use_shared_state::<Page>(cx).unwrap();
-
     cx.render(rsx! {
-        head {
-            style { include_str!("./styles.css") }
-        },
-        nav {
-            ul {
-                li {
-                    button {
-                        onclick: move |_| *current_page.write() = Page::Choser,
-                        "Choser"
-                    }
-                }
-                li {
-                    button {
-                        onclick: move |_| *current_page.write() = Page::List,
-                        "Recipe List"
-                    }
-                }
-            }
-        }
-
-        match *current_page.read() {
-            Page::Choser => {
-                rsx!{
-                    RecipeChoser {}
-                }
-            },
-            Page::List => {
-                rsx!{
-                    RecipeList {
-                        file: cli.file.clone()
-                    }
-                }
-            }
-            Page::Editor => {
-                rsx!{
-                    RecipeEditor {
-                        file: cli.file.clone()
-                    }
-                }
-            }
-        }
-
+        Router::<Route>{}
     })
 }

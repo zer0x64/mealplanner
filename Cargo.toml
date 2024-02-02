@@ -8,8 +8,16 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.4.18", features = ["derive"] }
 dioxus = "0.4.3"
-dioxus-desktop = "0.4.3"
+dioxus-router = "0.4.3"
 rand = "0.8.5"
 ron = "0.8.1"
 serde = { version = "1.0.196", features = ["derive"] }
 uuid = { version = "1.7.0", features = ["v4", "serde"] }
+
+[target.'cfg(any(unix, windows))'.dependencies]
+dioxus-desktop = { version = "0.4" }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+dioxus-web = { version = "0.4" }
+web-sys = { version = "0.3.64", features = [ "Window" ] }
+getrandom = { version = "0.2", features = ["js"] }
