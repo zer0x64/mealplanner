@@ -15,13 +15,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install dx cli
+      run: cargo install dioxus-cli
     - name: Build
-      run: cargo build --release
+      run: dx publish --release
+    - name: list
+      run: ls -la dist/bundle
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
       with:
         name: mealplanner_mac
-        path: target/release/mealplanner
+        path: dist/bundle/mealplanner.app
 
   build_linux:
     runs-on: ubuntu-latest
