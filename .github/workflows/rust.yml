@@ -18,7 +18,7 @@ jobs:
     - name: Install dx cli
       run: cargo install dioxus-cli
     - name: Build
-      run: dx publish --release
+      run: dx bundle --release
     - name: list
       run: ls -la dist/bundle
     - name: Archive production artifacts
@@ -43,7 +43,7 @@ jobs:
             libgtk-3-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \ 
-            libsoup3.0-dev
+            libsoup-dev
     - name: Build
       run: cargo build --release
     - name: Archive production artifacts
