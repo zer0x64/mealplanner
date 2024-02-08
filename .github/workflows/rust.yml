@@ -22,7 +22,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: mealplanner_mac
+        name: mealplanner_mac.app
         path: dist/bundle/macos/mealplanner.app
 
   build_linux:
