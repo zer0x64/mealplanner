@@ -27,7 +27,6 @@ pub enum Route {
 fn NavBar(cx: Scope) -> Element {
     render! {
         div {
-            class: "max-w-4xl mx-auto p-4 font-sans bg-gray-100",
             nav {
                 class: "mb-4",
                 ul {

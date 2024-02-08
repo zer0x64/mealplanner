@@ -26,7 +26,21 @@ fn main() {
     dioxus_desktop::launch_cfg(
         App,
         dioxus_desktop::Config::new()
-            .with_custom_head(r#"<link rel="stylesheet" href="public/tailwind.css">"#.to_string())
+            .with_custom_index(format!(r#"
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>mealplanner</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+                    <style>{}</style>
+                    <!-- CUSTOM HEAD -->
+                </head>
+                <body class="max-w-4xl mx-auto p-4 font-sans bg-gray-100">
+                    <div id="main"></div>
+                    <!-- MODULE LOADER -->
+                </body>
+            </html>
+            "#, include_str!("../public/tailwind.css")))
             .with_background_color((245, 245, 245, 255)),
     )
 }
