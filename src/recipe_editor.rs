@@ -1,19 +1,19 @@
-use std::collections::HashMap;
-
 use dioxus::prelude::*;
 use dioxus_router::hooks::use_navigator;
 use uuid::Uuid;
 
 use crate::{
     cli::Cli,
-    recipe::{save_recipes, Recipe},
+    config::{save_config, Config},
+    recipe::Recipe,
 };
 
 #[component]
 pub fn RecipeEditor(cx: Scope, id: Uuid) -> Element {
-    let recipes_state = use_shared_state::<HashMap<Uuid, Recipe>>(cx).unwrap();
-    let mut current_recipe = recipes_state
+    let config_state = use_shared_state::<Config>(cx).unwrap();
+    let mut current_recipe = config_state
         .read()
+        .recipes
         .get(id)
         .unwrap_or(&mut Recipe::default())
         .clone();
@@ -31,7 +31,7 @@ pub fn RecipeEditor(cx: Scope, id: Uuid) -> Element {
             }
             input {
                 value: "{name}",
-                class: "border rounded-md p-2 mb-4",
+                class: "border rounded-md p-2 mb-4 dark:bg-slate-500 dark:text-white",
                 oninput: move |event| {
                         name.set(event.value.clone());
                 }
@@ -45,7 +45,7 @@ pub fn RecipeEditor(cx: Scope, id: Uuid) -> Element {
                 div {
                     class: "mb-4",
                     input {
-                        class: "border rounded-md p-2",
+                        class: "border rounded-md p-2 dark:bg-slate-500 dark:text-white",
                         value: "{ing}",
                         oninput: move |event| {
                             ingredients.write()[i] = event.value.clone();
@@ -75,9 +75,9 @@ pub fn RecipeEditor(cx: Scope, id: Uuid) -> Element {
                 onclick: move |_| {
                     current_recipe.name = name.to_string();
                     current_recipe.ingredients = ingredients.read().clone();
-                    recipes_state.write().insert(id.clone(), current_recipe.clone());
+                    config_state.write().recipes.insert(id.clone(), current_recipe.clone());
 
-                    save_recipes(&cli.read().file, &recipes_state.read().clone());
+                    save_config(&cli.read().file, &config_state.read().clone());
 
                     use_navigator(cx).push(crate::route::Route::RecipeList {});
                 },

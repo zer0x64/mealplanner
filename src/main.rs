@@ -1,21 +1,21 @@
 #![allow(non_snake_case)]
 
 mod cli;
+mod config;
 mod recipe;
 mod recipe_choser;
 mod recipe_editor;
 mod recipe_list;
 mod route;
 
-use std::{collections::HashMap, fs::File, io::BufReader};
+use std::{fs::File, io::BufReader};
 
 use clap::Parser;
+use config::Config;
 use dioxus::prelude::*;
 use dioxus_router::prelude::*;
-use uuid::Uuid;
 
 use cli::Cli;
-use recipe::Recipe;
 use route::Route;
 
 fn main() {
@@ -35,7 +35,7 @@ fn main() {
                     <style>{}</style>
                     <!-- CUSTOM HEAD -->
                 </head>
-                <body class="max-w-4xl mx-auto p-4 font-sans bg-gray-100">
+                <body class="max-w-4xl mx-auto p-4 font-sans bg-gray-100 dark:bg-slate-800 dark:text-slate-400">
                     <div id="main"></div>
                     <!-- MODULE LOADER -->
                 </body>
@@ -54,12 +54,18 @@ fn App(cx: Scope) -> Element {
     use_shared_state_provider(cx, || {
         let file = match File::open(&cli.read().file) {
             Ok(f) => f,
-            Err(_) => return HashMap::<Uuid, Recipe>::new(),
+            Err(e) => {
+                println!("Error while reading config file: {e}");
+                return Config::default();
+            }
         };
 
         match ron::de::from_reader(BufReader::new(file)) {
             Ok(r) => r,
-            Err(_) => HashMap::new(),
+            Err(e) => {
+                println!("Error while parsing config: {e}");
+                Config::default()
+            }
         }
     });
 
